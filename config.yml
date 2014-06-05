@@ -5,11 +5,11 @@ aliases:
     - example
     - power
     - pow
-    execute: /f p
+    execute: f p
     requires:
       factionsEnabledInWorld: true
       executerIsPlayer: false
       executerIsInFaction: false
     permission: factions.power
-    permissionDeniedMessage: '§4You don't have permission to do this!'
+    permissionDeniedMessage: '§4You dont have permission to do this!'
     description: 'This is an example!'

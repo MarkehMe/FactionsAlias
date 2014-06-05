@@ -2,6 +2,9 @@ package com.markehme.factionsalias.support;
 
 import java.util.List;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
 import com.massivecraft.factions.cmd.FCommand;
 import com.massivecraft.factions.cmd.req.ReqFactionsEnabled;
 import com.massivecraft.factions.cmd.req.ReqHasFaction;
@@ -16,7 +19,7 @@ import com.massivecraft.mcore.util.Txt;
  */
 public class Factions2XCommandSkeleton extends FCommand {
 	public String exec = "";
-	public String permissionRequired = "";
+	public String permissionRequired = null;
 	public String permissionDeniedMsg = "";
 	
 	public Factions2XCommandSkeleton(
@@ -61,13 +64,16 @@ public class Factions2XCommandSkeleton extends FCommand {
 	@Override
 	public void perform() {
 		if(this.permissionRequired != null) {
-			if(!me.hasPermission(this.permissionRequired)) {
-				msg(this.permissionDeniedMsg);
-				return;
+			if(me instanceof Player) {
+				if(!me.hasPermission(permissionRequired)) {
+					msg(permissionDeniedMsg);
+					return;
+				}
 			}
 		}
-		
-		me.performCommand(exec + " " + Txt.implode(args, " ").replaceAll("(&([a-f0-9]))", "& $2"));
+				
+		Bukkit.getServer().dispatchCommand(sender, exec + " " + Txt.implode(args, " ").replaceAll("(&([a-f0-9]))", "& $2"));
+
 	}
 
 }

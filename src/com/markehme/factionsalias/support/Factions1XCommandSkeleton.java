@@ -2,6 +2,7 @@ package com.markehme.factionsalias.support;
 
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -18,7 +19,7 @@ import com.massivecraft.factions.zcore.util.TextUtil;
  */
 public class Factions1XCommandSkeleton extends FCommand {
 	public String exec = "";
-	public String permissionRequired = "";
+	public String permissionRequired = null;
 	public String permissionDeniedMsg = "";
 	
 	public Boolean requiresFactionsEnabled = false;
@@ -64,6 +65,7 @@ public class Factions1XCommandSkeleton extends FCommand {
 	}
 	
 	public final void perform() {
+		
 		if(requiresFactionsEnabled) { 
 			if(!P.p.isEnabled()) {
 				me.sendMessage(ChatColor.RED + "Factions is not enabled, and you therefore can't use this command!");
@@ -85,7 +87,16 @@ public class Factions1XCommandSkeleton extends FCommand {
 			}
 		}
 		
-		me.performCommand(exec + " " + TextUtil.implode(args, " ").replaceAll("(&([a-f0-9]))", "& $2"));
-
+		if(this.permissionRequired != null) {
+			if(me instanceof Player) {
+				if(!me.hasPermission(permissionRequired)) {
+					msg(permissionDeniedMsg);
+					return;
+				}
+			}
+		}
+		
+		Bukkit.getServer().dispatchCommand(sender, exec + " " + TextUtil.implode(args, " ").replaceAll("(&([a-f0-9]))", "& $2"));
+		
 	}
 }
