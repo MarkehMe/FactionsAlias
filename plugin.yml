@@ -2,6 +2,22 @@ name: FactionsAlias
 main: com.markehme.factionsalias.FactionsAlias
 author: MarkehMe
 website: http://markeh.me
-version: 1.0.0
+version: 1.1.1
 depend: [ Factions ]
 dev-url: http://dev.bukkit.org/bukkit-plugins/factionsalias/
+commands:
+  factionsalias:
+    description: Access the FactionsAlias command.
+    usage: "Usage: '/factionsalias <option>'"
+
+permissions:
+  factionsalias.reload:
+    default: false
+    description: allows reloading the plugin
+  factionsalias.list:
+    default: false
+    description: allows listing all aliases registered 
+  factionsalias.help:
+    default: true
+    description: allows viewing help of the plugin
+    
