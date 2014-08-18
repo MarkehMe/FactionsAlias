@@ -4,6 +4,7 @@ Changelog
 1.1.1
 * Added debug information
 * Added new requirement 'executerIsLeader'
+* Fixes a bug related to unregistering 1.x commands 
 
 1.1.0
 * Added command `/factionsalias reload` with permission: factionsalias.reload
