@@ -101,6 +101,9 @@ public class FactionsAlias extends JavaPlugin {
 		for(String aliasSection : config.getConfigurationSection("aliases").getKeys(false)) {
 			i++;
 			
+			// ensure any new features are added
+			ensureSectionIsUpToDate(aliasSection);
+			
 			List<String> a = new ArrayList<String>();
 			a.clear();
 			
@@ -114,6 +117,7 @@ public class FactionsAlias extends JavaPlugin {
 				config.getBoolean("aliases."+aliasSection+".requires.factionsEnabledInWorld"),
 				config.getBoolean("aliases."+aliasSection+".requires.executerIsPlayer"),
 				config.getBoolean("aliases."+aliasSection+".requires.executerIsInFaction"),
+				config.getBoolean("aliases."+aliasSection+".requires.executerIsLeader"),
 				config.getString("aliases."+aliasSection+".permission"), 
 				config.getString("aliases."+aliasSection+".permissionDeniedMessage"),
 				config.getString("aliases."+aliasSection+".description"),
@@ -128,6 +132,10 @@ public class FactionsAlias extends JavaPlugin {
 	
 	public List<String> getAliases() {
 		return aliasList;
+	}
+	
+	public void ensureSectionIsUpToDate(String section) {
+		if(!config.contains("aliases."+section+".requires.executerIsLeader")) config.set("aliases."+section+".requires.executerIsLeader", false);
 	}
 	
 	public void log(String str) {
