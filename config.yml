@@ -10,6 +10,7 @@ aliases:
       factionsEnabledInWorld: true
       executerIsPlayer: false
       executerIsInFaction: false
+      executerIsLeader: false
     permission: factions.power
     permissionDeniedMessage: '§4You dont have permission to do this!'
     description: 'This is an example!'
