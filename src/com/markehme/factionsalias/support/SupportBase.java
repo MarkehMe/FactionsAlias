@@ -14,6 +14,7 @@ public interface SupportBase {
 			Boolean requiresFactionsEnabled,
 			Boolean requiresIsPlayer,
 			Boolean requiresInFaction,
+			Boolean requiresIsLeader,
 			String permission,
 			String permissionDeniedMessage,
 			String desc,
