@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import com.massivecraft.factions.FPlayers;
 import com.massivecraft.factions.P;
 import com.massivecraft.factions.cmd.FCommand;
+import com.massivecraft.factions.struct.Role;
 import com.massivecraft.factions.zcore.util.TextUtil;
 
 /**
@@ -25,12 +26,14 @@ public class Factions1XCommandSkeleton extends FCommand {
 	public Boolean requiresFactionsEnabled = false;
 	public Boolean requiresInFaction = false;
 	public Boolean requiresSenderPlayer = false;
+	public Boolean requiresSenderLeader = false;
 	
 	public Factions1XCommandSkeleton(
 			List<String> aliases,
 			boolean requiresFactionsEnabled,
 			boolean requiresIsPlayer,
 			boolean requiresInFaction,
+			boolean requiresIsLeader,
 			String permission,
 			String permissionDeniedMessage,
 			String desc,
@@ -47,11 +50,15 @@ public class Factions1XCommandSkeleton extends FCommand {
 		}
 		
 		if(requiresIsPlayer) {
-			requiresSenderPlayer = true;
+			this.requiresSenderPlayer = true;
 		}
 		
 		if(requiresInFaction) {
-			requiresInFaction = true;
+			this.requiresInFaction = true;
+		}
+		
+		if(requiresIsLeader) {
+			this.requiresSenderLeader = true;
 		}
 		
 		this.permissionRequired = permission;
@@ -83,6 +90,13 @@ public class Factions1XCommandSkeleton extends FCommand {
 		if(requiresSenderPlayer) {
 			if(!(sender instanceof Player)) {
 				me.sendMessage(ChatColor.RED + "Only a player can run this command.");
+				return;
+			}
+		}
+		
+		if(requiresSenderLeader) {
+			if(!this.fme.getRole().equals(Role.ADMIN)) {
+				me.sendMessage(ChatColor.RED + "Only the leader of the faction can run this command.");
 				return;
 			}
 		}
