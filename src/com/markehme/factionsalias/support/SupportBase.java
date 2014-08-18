@@ -9,7 +9,7 @@ import java.util.List;
  *
  */
 public interface SupportBase {
-
+		
 	public void add(List<String> aliases,
 			Boolean requiresFactionsEnabled,
 			Boolean requiresIsPlayer,
@@ -18,4 +18,8 @@ public interface SupportBase {
 			String permissionDeniedMessage,
 			String desc,
 			String executingCommand);
+	
+	public void unregister();
+	
+	public void finishCall();
 }
