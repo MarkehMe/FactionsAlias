@@ -31,6 +31,7 @@ public class Factions1X implements SupportBase {
 			Boolean requiresFactionsEnabled,
 			Boolean requiresIsPlayer,
 			Boolean requiresInFaction,
+			Boolean requiresIsLeader,
 			String permission,
 			String permissionDeniedMessage,
 			String desc,
@@ -41,6 +42,7 @@ public class Factions1X implements SupportBase {
 			requiresFactionsEnabled,
 			requiresIsPlayer,
 			requiresInFaction,
+			requiresIsLeader,
 			permission,
 			permissionDeniedMessage,
 			desc,
@@ -63,7 +65,7 @@ public class Factions1X implements SupportBase {
 	@Override
 	public void unregister() {
 		for (int i=0; i < commands.size(); i++) {
-			P.p.cmdBase.getSubCommands().remove(commands.get(i));
+			P.p.cmdBase.subCommands.remove(commands.get(i));
 		}
 	}
 	
