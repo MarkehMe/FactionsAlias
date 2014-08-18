@@ -3,8 +3,10 @@ package com.markehme.factionsalias.support;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import com.massivecraft.factions.Rel;
 import com.massivecraft.factions.cmd.FCommand;
 import com.massivecraft.factions.cmd.req.ReqFactionsEnabled;
 import com.massivecraft.factions.cmd.req.ReqHasFaction;
@@ -22,11 +24,14 @@ public class Factions2XCommandSkeleton extends FCommand {
 	public String permissionRequired = null;
 	public String permissionDeniedMsg = "";
 	
+	public Boolean requirePlayerIsLeader = false;
+	
 	public Factions2XCommandSkeleton(
 			List<String> aliases,
 			boolean requiresFactionsEnabled,
 			boolean requiresIsPlayer,
 			boolean requiresInFaction,
+			boolean requiresIsLeader,
 			String permission,
 			String permissionDeniedMessage,
 			String desc,
@@ -36,7 +41,7 @@ public class Factions2XCommandSkeleton extends FCommand {
 		// Move through all the aliases and add them for this command
 		for(Object alias : aliases) {
 			this.aliases.add((String) alias);
-		}		
+		}
 		
 		if(requiresFactionsEnabled) {
 			this.addRequirements(ReqFactionsEnabled.get());
@@ -48,6 +53,10 @@ public class Factions2XCommandSkeleton extends FCommand {
 		
 		if(requiresInFaction) {
 			this.addRequirements(ReqHasFaction.get());
+		}
+		
+		if(requiresIsLeader) {
+			this.requirePlayerIsLeader = true;
 		}
 		
 		this.permissionRequired = permission;
@@ -69,6 +78,13 @@ public class Factions2XCommandSkeleton extends FCommand {
 					msg(permissionDeniedMsg);
 					return;
 				}
+			}
+		}
+		
+		if(this.requirePlayerIsLeader) {
+			if(!this.usender.getRole().equals(Rel.LEADER)) {
+				msg(ChatColor.RED + "Only the leader of the faction can run this command.");
+				return;
 			}
 		}
 				
