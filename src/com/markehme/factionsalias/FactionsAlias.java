@@ -1,7 +1,8 @@
 package com.markehme.factionsalias;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -50,7 +51,7 @@ public class FactionsAlias extends JavaPlugin {
 		}
 		
 		if(isFactions2X) { 
-			supportBase = new Factions2X(new HashMap<String, String>(null));
+			supportBase = new Factions2X(null);
 			log("Detected Factions 2.x");
 		} else {
 			Plugin plugin = Bukkit.getPluginManager().getPlugin("Factions");
@@ -103,6 +104,12 @@ public class FactionsAlias extends JavaPlugin {
 			
 			// ensure any new features are added
 			ensureSectionIsUpToDate(aliasSection);
+			
+			try {
+				config.save(new File("FactionsAlias/config.yml"));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			
 			List<String> a = new ArrayList<String>();
 			a.clear();
