@@ -6,9 +6,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import com.massivecraft.factions.Factions;
 import com.massivecraft.factions.Rel;
-import com.massivecraft.factions.cmd.FCommand;
-import com.massivecraft.factions.cmd.req.ReqFactionsEnabled;
+import com.massivecraft.factions.cmd.FactionsCommand;
 import com.massivecraft.factions.cmd.req.ReqHasFaction;
 import com.massivecraft.massivecore.cmd.req.ReqIsPlayer;
 import com.massivecraft.massivecore.util.Txt;
@@ -19,12 +19,14 @@ import com.massivecraft.massivecore.util.Txt;
  * @author MarkehMe<mark@markeh.me>
  *
  */
-public class Factions2XCommandSkeleton extends FCommand {
+public class Factions2XCommandSkeleton extends FactionsCommand {
 	public String exec = "";
 	public String permissionRequired = null;
 	public String permissionDeniedMsg = "";
 	
 	public Boolean requirePlayerIsLeader = false;
+	
+	public boolean requiresFactionsEnabled = false;
 	
 	public Factions2XCommandSkeleton(
 			List<String> aliases,
@@ -43,16 +45,16 @@ public class Factions2XCommandSkeleton extends FCommand {
 			this.aliases.add((String) alias);
 		}
 		
-		if(requiresFactionsEnabled) {
-			this.addRequirements(ReqFactionsEnabled.get());
-		}
-		
 		if(requiresIsPlayer) {
 			this.addRequirements(ReqIsPlayer.get());
 		}
 		
 		if(requiresInFaction) {
 			this.addRequirements(ReqHasFaction.get());
+		}
+		
+		if(requiresFactionsEnabled) {
+			this.requiresFactionsEnabled = true;
 		}
 		
 		if(requiresIsLeader) {
@@ -72,7 +74,7 @@ public class Factions2XCommandSkeleton extends FCommand {
 	
 	@Override
 	public void perform() {
-		if(this.permissionRequired != null) {
+		if(permissionRequired != null) {
 			if(me instanceof Player) {
 				if(!me.hasPermission(permissionRequired)) {
 					msg(permissionDeniedMsg);
@@ -81,8 +83,15 @@ public class Factions2XCommandSkeleton extends FCommand {
 			}
 		}
 		
-		if(this.requirePlayerIsLeader) {
-			if(!this.usender.getRole().equals(Rel.LEADER)) {
+		if(requiresFactionsEnabled) {
+			if(Factions.get().isEnabled()) {
+				me.sendMessage(ChatColor.RED + "Factions is not enabled, and you therefore can't use this command!");
+				return;
+			}
+		}
+		
+		if(requirePlayerIsLeader) {
+			if(!msender.getRole().equals(Rel.LEADER)) {
 				msg(ChatColor.RED + "Only the leader of the faction can run this command.");
 				return;
 			}

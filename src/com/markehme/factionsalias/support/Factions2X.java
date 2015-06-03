@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.massivecraft.factions.Factions;
-import com.massivecraft.factions.cmd.FCommand;
+import com.massivecraft.massivecore.cmd.MassiveCommand;
 
 /**
  * Factions 2.x Support
@@ -45,7 +45,7 @@ public class Factions2X implements SupportBase {
 		commands.add(command);
 		
 		Factions.get().getOuterCmdFactions().addSubCommand(
-			(FCommand) command
+			(MassiveCommand) command
 		);			
 	}
 
