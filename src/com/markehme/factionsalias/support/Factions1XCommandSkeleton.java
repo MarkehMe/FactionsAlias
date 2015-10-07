@@ -10,6 +10,7 @@ import com.massivecraft.factions.FPlayers;
 import com.massivecraft.factions.P;
 import com.massivecraft.factions.cmd.FCommand;
 import com.massivecraft.factions.struct.Role;
+import com.massivecraft.factions.zcore.util.TL;
 import com.massivecraft.factions.zcore.util.TextUtil;
 
 /**
@@ -81,7 +82,7 @@ public class Factions1XCommandSkeleton extends FCommand {
 		}
 		
 		if(requiresInFaction) { 
-			if(!FPlayers.i.get(me).hasFaction()) {
+			if(!FPlayers.getInstance().getByPlayer(me).hasFaction()) {
 				me.sendMessage(ChatColor.RED + "You need a Faction to run this command.");
 				return;
 			}
@@ -112,5 +113,10 @@ public class Factions1XCommandSkeleton extends FCommand {
 		
 		Bukkit.getServer().dispatchCommand(sender, exec + " " + TextUtil.implode(args, " ").replaceAll("(&([a-f0-9]))", "& $2"));
 		
+	}
+
+	@Override
+	public TL getUsageTranslation() {
+		return null;
 	}
 }

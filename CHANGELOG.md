@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.3.0
+* Fixed support for latest FactionsUUID
+* Fixed support for latest Factions 2.x
+* Fixed a bug for checking if Factions is enabled  
+
+1.2.0
+* Updating 2.x support to latest version of Factions
+
 1.1.1
 * Added debug information
 * Added new requirement 'executerIsLeader'

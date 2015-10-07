@@ -69,7 +69,6 @@ public class Factions2XCommandSkeleton extends FactionsCommand {
 		
 		exec = executingCommand;
 		
-		this.errorOnToManyArgs = false;
 	}
 	
 	@Override
@@ -84,7 +83,7 @@ public class Factions2XCommandSkeleton extends FactionsCommand {
 		}
 		
 		if(requiresFactionsEnabled) {
-			if(Factions.get().isEnabled()) {
+			if(!Factions.get().isEnabled()) {
 				me.sendMessage(ChatColor.RED + "Factions is not enabled, and you therefore can't use this command!");
 				return;
 			}
