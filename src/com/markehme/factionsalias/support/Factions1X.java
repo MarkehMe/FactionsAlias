@@ -17,14 +17,9 @@ public class Factions1X implements SupportBase {
 	List<Factions1XCommandSkeleton> commands = new ArrayList<Factions1XCommandSkeleton>();
 	List<String> helpLines = new ArrayList<String>();
 	
-	private boolean is16 = false;
 	
 	public Factions1X(HashMap<String, String> settings) {
-		if(settings.containsKey("16")) {
-			if(settings.get("16") == "Y") {
-				is16 = true;
-			}
-		}
+		// No settings required for Factions UUID as we've dropped support for 1.7
 	}
 
 	public void add(List<String> aliases,
@@ -55,10 +50,7 @@ public class Factions1X implements SupportBase {
 			(FCommand) command
 		);
 		
-		if(is16) { 
-			// Add help lines - this is only needed in 1.6.x
-			helpLines.add(command.getUseageTemplate(true));
-		}
+		helpLines.add(command.getUseageTemplate(true));
 		
 	}
 	
@@ -72,34 +64,29 @@ public class Factions1X implements SupportBase {
 	@Override
 	public void finishCall() {
 		P.p.cmdBase.cmdHelp.updateHelp();
-		
-		// Only 1.6 needs pages to be added,
-		// as 1.7 does it auto.
-		if(is16) { 
-			
-			// Ensure there are help lines to be added
-			if(helpLines.size() > 0 ) {
-				
-				ArrayList<String> pageLines = new ArrayList<String>();
-				
-				int i = 0;
-				
-				for(String line : helpLines) {
-					if(i >= 7) {
-						i = 0; // reset the count 
-						P.p.cmdBase.cmdHelp.helpPages.add(pageLines); // add our page
-						pageLines.clear(); // clear the current lines
-					}
 					
-					i++;
-					pageLines.add(line); // add a line 
-				}
+		// Ensure there are help lines to be added
+		if(helpLines.size() > 0 ) {
 				
-				// Add any leftover lines that haven't made a full page
-				if(i > 0) {
-					P.p.cmdBase.cmdHelp.helpPages.add(pageLines);
-					pageLines.clear();
+			ArrayList<String> pageLines = new ArrayList<String>();
+				
+			int i = 0;
+				
+			for(String line : helpLines) {
+				if(i >= 7) {
+					i = 0; // reset the count 
+					P.p.cmdBase.cmdHelp.helpPages.add(pageLines); // add our page
+					pageLines.clear(); // clear the current lines
 				}
+					
+				i++;
+				pageLines.add(line); // add a line 
+			}
+				
+			// Add any leftover lines that haven't made a full page
+			if(i > 0) {
+				P.p.cmdBase.cmdHelp.helpPages.add(pageLines);
+				pageLines.clear();
 			}
 		}
 	}

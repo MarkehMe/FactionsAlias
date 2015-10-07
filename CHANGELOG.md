@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.3.1
+* Fixed a bug that would throw "too many arguments" 
+* Dropped support for 1.7 - only Factions 2.x and FactionsUUID 1.6 supported 
+* `/factionsalias list` is now more informative 
+
 1.3.0
 * Fixed support for latest FactionsUUID
 * Fixed support for latest Factions 2.x

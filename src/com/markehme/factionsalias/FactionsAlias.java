@@ -3,6 +3,7 @@ package com.markehme.factionsalias;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -33,6 +34,7 @@ public class FactionsAlias extends JavaPlugin {
 	
 	// Alias list
 	private List<String> aliasList = new ArrayList<String>();
+	private HashMap<String, String> aliasMap = new HashMap<String, String>();
 	
 	private FileConfiguration config;
 
@@ -43,7 +45,7 @@ public class FactionsAlias extends JavaPlugin {
 		getCommand("factionsalias").setExecutor(new FactionsAliasCommand(this));
 		
 		Boolean isFactions2X = true;
-		String isFactions16 = "N"; // only because 1.6.x does help different to 1.7 and 1.8
+		
 		try {
 			Class.forName("com.massivecraft.factions.entity.MConf");
 		} catch (ClassNotFoundException ex) {
@@ -54,14 +56,8 @@ public class FactionsAlias extends JavaPlugin {
 			supportBase = new Factions2X(null);
 			log("Detected Factions 2.x");
 		} else {
-			Plugin plugin = Bukkit.getPluginManager().getPlugin("Factions");
-			
-			if(plugin.getDescription().getVersion().startsWith("1.6")) {
-				isFactions16 = "Y";
-			}
-			
-			supportBase = new Factions1X(Util.settings("1.6", isFactions16));
-			log("Detected Factions 1.x");
+			supportBase = new Factions1X(null);
+			log("Detected Factions UUID 1.6");
 		}
 		
 		saveDefaultConfig();
@@ -93,6 +89,7 @@ public class FactionsAlias extends JavaPlugin {
 		supportBase.unregister();
 		
 		aliasList.clear();
+		aliasMap.clear();
 	}
 	
 	public void registerSubCommands() {
@@ -112,11 +109,11 @@ public class FactionsAlias extends JavaPlugin {
 			}
 			
 			List<String> a = new ArrayList<String>();
-			a.clear();
 			
 			for(Object badfb : config.getList("aliases."+aliasSection+".aliases").toArray()) {
 				a.add(badfb.toString());
 				aliasList.add(badfb.toString());
+				aliasMap.put(badfb.toString(), config.getString("aliases."+aliasSection+".execute"));
 			}
 			
 			supportBase.add(
@@ -139,6 +136,10 @@ public class FactionsAlias extends JavaPlugin {
 	
 	public List<String> getAliases() {
 		return aliasList;
+	}
+	
+	public String getExecFor(String alias) {
+		return this.aliasMap.get(alias);
 	}
 	
 	public void ensureSectionIsUpToDate(String section) {

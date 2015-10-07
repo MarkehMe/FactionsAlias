@@ -41,7 +41,7 @@ public class FactionsAliasCommand   implements CommandExecutor {
 				sender.sendMessage(ChatColor.AQUA + " --- Registered Aliases --- ");
 				
 				for(String a : instance.getAliases()) {
-					sender.sendMessage(ChatColor.DARK_AQUA + "- " + ChatColor.RED + a);
+					sender.sendMessage(ChatColor.DARK_AQUA + "  - " + ChatColor.RED + a +  ChatColor.WHITE + " -> " + ChatColor.GOLD + instance.getExecFor(a));
 				}
 				
 				sender.sendMessage(ChatColor.AQUA + " -------------------------- ");
