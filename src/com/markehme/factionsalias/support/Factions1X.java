@@ -50,7 +50,7 @@ public class Factions1X implements SupportBase {
 			(FCommand) command
 		);
 		
-		helpLines.add(command.getUseageTemplate(true));
+		helpLines.add(command.getUseageTemplate());
 		
 	}
 	
