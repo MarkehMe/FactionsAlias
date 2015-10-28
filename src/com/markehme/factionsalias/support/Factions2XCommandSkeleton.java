@@ -70,7 +70,7 @@ public class Factions2XCommandSkeleton extends FactionsCommand {
 		exec = executingCommand;
 		
 		// don't error on too many args 
-		this.setGivingErrorOnTooManyArgs(false);
+		this.setOverflowSensitive(false);
 		
 	}
 	

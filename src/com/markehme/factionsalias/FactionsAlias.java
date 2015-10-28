@@ -9,11 +9,11 @@ import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.markehme.factionsalias.support.Factions1X;
 import com.markehme.factionsalias.support.Factions2X;
+import com.markehme.factionsalias.support.FactionsPlusX;
 import com.markehme.factionsalias.support.SupportBase;
 
 /**
@@ -22,7 +22,7 @@ import com.markehme.factionsalias.support.SupportBase;
  * and Factions 2.x FIRST. Refresh project. Then reference the
  * latest Factions 1.6. You will probably still get errors so
  * it is sometimes better to work on either Factions 1X or 2X
- * separately. 
+ * separately. FactionsPlus can be referenced whenever. 
  * 
  * @author MarkehMe<mark@markeh.me>
  *
@@ -44,20 +44,28 @@ public class FactionsAlias extends JavaPlugin {
 		
 		getCommand("factionsalias").setExecutor(new FactionsAliasCommand(this));
 		
-		Boolean isFactions2X = true;
 		
-		try {
-			Class.forName("com.massivecraft.factions.entity.MConf");
-		} catch (ClassNotFoundException ex) {
-			isFactions2X = false;
-		}
-		
-		if(isFactions2X) { 
-			supportBase = new Factions2X(null);
-			log("Detected Factions 2.x");
+		if (Bukkit.getPluginManager().isPluginEnabled("FactionsPlus")) {
+			supportBase = new FactionsPlusX(null);
+			
+			log("Detected FactionsPlus (universal)");
+
 		} else {
-			supportBase = new Factions1X(null);
-			log("Detected Factions UUID 1.6");
+			Boolean isFactions2X = true;
+			
+			try {
+				Class.forName("com.massivecraft.factions.entity.MConf");
+			} catch (ClassNotFoundException ex) {
+				isFactions2X = false;
+			}
+			
+			if(isFactions2X) { 
+				supportBase = new Factions2X(null);
+				log("Detected Factions 2.x");
+			} else {
+				supportBase = new Factions1X(null);
+				log("Detected Factions UUID 1.6");
+			}
 		}
 		
 		saveDefaultConfig();

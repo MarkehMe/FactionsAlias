@@ -4,19 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.massivecraft.factions.Factions;
-import com.massivecraft.massivecore.cmd.MassiveCommand;
+import me.markeh.factionsframework.command.FactionsCommandManager;
 
-/**
- * Factions 2.x Support
- *     
- * @author MarkehMe<mark@markeh.me>
- *
- */
-public class Factions2X implements SupportBase {
-	List<Factions2XCommandSkeleton> commands = new ArrayList<Factions2XCommandSkeleton>();
+public class FactionsPlusX implements SupportBase {
+	List<FactionsPlusXCommandSkeleton> commands = new ArrayList<FactionsPlusXCommandSkeleton>();
 	
-	public Factions2X(HashMap<String, String> hashMap) {
+	public FactionsPlusX(HashMap<String, String> hashMap) {
 		// Currently no settings are used. 
 	}
 
@@ -30,7 +23,7 @@ public class Factions2X implements SupportBase {
 			String desc,
 			String executingCommand) {
 		
-		Factions2XCommandSkeleton command = new Factions2XCommandSkeleton(
+		FactionsPlusXCommandSkeleton command = new FactionsPlusXCommandSkeleton(
 			aliases,
 			requiresFactionsEnabled,
 			requiresIsPlayer,
@@ -44,15 +37,14 @@ public class Factions2X implements SupportBase {
 		
 		commands.add(command);
 		
-		Factions.get().getOuterCmdFactions().addChild(
-			(MassiveCommand) command
-		);			
+		FactionsCommandManager.get().addCommand(command);
+		
 	}
 
 	@Override
 	public void unregister() {
 		for (int i=0; i < commands.size(); i++) {
-			Factions.get().getOuterCmdFactions().removeChild(this.commands.get(i));
+			FactionsCommandManager.get().removeCommand(commands.get(i));
 		}
 	}
 	
