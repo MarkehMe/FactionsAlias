@@ -2,8 +2,8 @@ name: FactionsAlias
 main: com.markehme.factionsalias.FactionsAlias
 author: MarkehMe
 website: http://markeh.me
-version: 1.3.1
-depend: [ Factions ]
+version: 2.0.0
+softdepend: [ FactionsPlus ]
 dev-url: http://dev.bukkit.org/bukkit-plugins/factionsalias/
 commands:
   factionsalias:

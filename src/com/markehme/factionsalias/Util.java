@@ -1,6 +1,7 @@
 package com.markehme.factionsalias;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class Util {
 	public static HashMap<String, String> settings(String... data) {
@@ -17,5 +18,9 @@ public class Util {
 		}
 		
 		return ret;
+	}
+	
+	public static String mapToJson(Map<String, Object> map) {
+		return null;
 	}
 }

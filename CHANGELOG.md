@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.0.0
+* Now using JSON files instead of storing it all in a config file
+* Added the ability to over-write existing aliases
+
 1.3.1
 * Fixed a bug that would throw "too many arguments" 
 * Dropped support for 1.7 - only Factions 2.x and FactionsUUID 1.6 supported 

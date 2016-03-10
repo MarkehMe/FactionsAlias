@@ -6,13 +6,10 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class FactionsAliasCommand   implements CommandExecutor {
-	private FactionsAlias instance;
+import com.markehme.factionsalias.entities.Alias;
+
+public class FactionsAliasCommand implements CommandExecutor {
 	
-	public FactionsAliasCommand(FactionsAlias i) {
-		this.instance = i;
-	}
-	 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		
@@ -25,7 +22,7 @@ public class FactionsAliasCommand   implements CommandExecutor {
 					}
 				}
 				
-				instance.reloadSubCommands();
+				FactionsAlias.get().reloadSubCommands();
 				
 				sender.sendMessage(ChatColor.GREEN + "FactionsAlias has been reloaded!");
 				
@@ -40,8 +37,8 @@ public class FactionsAliasCommand   implements CommandExecutor {
 				
 				sender.sendMessage(ChatColor.AQUA + " --- Registered Aliases --- ");
 				
-				for(String a : instance.getAliases()) {
-					sender.sendMessage(ChatColor.DARK_AQUA + "  - " + ChatColor.RED + a +  ChatColor.WHITE + " -> " + ChatColor.GOLD + instance.getExecFor(a));
+				for(Alias a : FactionsAlias.get().getAliases()) {
+					sender.sendMessage(ChatColor.DARK_AQUA + "  - " + ChatColor.RED + a.getAliases().toString() +  ChatColor.WHITE + " -> " + ChatColor.GOLD + a.getExecute());
 				}
 				
 				sender.sendMessage(ChatColor.AQUA + " -------------------------- ");

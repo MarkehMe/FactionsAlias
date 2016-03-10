@@ -2,86 +2,100 @@ package com.markehme.factionsalias;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
+
+import me.markeh.factionsframework.command.FactionsCommandManager;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.markehme.factionsalias.support.Factions1X;
-import com.markehme.factionsalias.support.Factions2X;
-import com.markehme.factionsalias.support.FactionsPlusX;
-import com.markehme.factionsalias.support.SupportBase;
+import com.markehme.factionsalias.entities.Alias;
+import com.markehme.factionsalias.entities.FactionsCommandSkeleton;
+import com.markehme.factionsalias.libs.gson.Gson;
+import com.markehme.factionsalias.libs.gson.GsonBuilder;
 
-/**
- * Troubles compiling?
- * Ensure when you reference Factions jars you reference MCore
- * and Factions 2.x FIRST. Refresh project. Then reference the
- * latest Factions 1.6. You will probably still get errors so
- * it is sometimes better to work on either Factions 1X or 2X
- * separately. FactionsPlus can be referenced whenever. 
- * 
- * @author MarkehMe<mark@markeh.me>
- *
- */
 public class FactionsAlias extends JavaPlugin {
 	
-	// Our Factions 1X and 2X support base
-	private SupportBase supportBase = null;
-	
+	// Singleton
+	private static FactionsAlias instance = null;
+	public static FactionsAlias get() { return instance; }
+		
 	// Alias list
-	private List<String> aliasList = new ArrayList<String>();
-	private HashMap<String, String> aliasMap = new HashMap<String, String>();
+	private List<Alias> aliasList = new ArrayList<Alias>();
 	
 	private FileConfiguration config;
 
+	public static Gson getGson() {
+		return new GsonBuilder().create();
+	}
+	
+	
 	@Override
 	public void onEnable() {
-		aliasList.clear();
+		instance = this;
+				
+		// set command executor 
+		getCommand("factionsalias").setExecutor(new FactionsAliasCommand());
 		
-		getCommand("factionsalias").setExecutor(new FactionsAliasCommand(this));
-		
-		
-		if (Bukkit.getPluginManager().isPluginEnabled("FactionsPlus")) {
-			supportBase = new FactionsPlusX(null);
-			
-			log("Detected FactionsPlus (universal)");
-
-		} else {
-			Boolean isFactions2X = true;
-			
-			try {
-				Class.forName("com.massivecraft.factions.entity.MConf");
-			} catch (ClassNotFoundException ex) {
-				isFactions2X = false;
-			}
-			
-			if(isFactions2X) { 
-				supportBase = new Factions2X(null);
-				log("Detected Factions 2.x");
-			} else {
-				supportBase = new Factions1X(null);
-				log("Detected Factions UUID 1.6");
-			}
+		if ( ! Bukkit.getPluginManager().isPluginEnabled("FactionsPlus")) {
+			log("This plugin requires FactionsPlus!");
+			this.getServer().getPluginManager().disablePlugin(this);
+			return;
 		}
-		
+				
+		if ( ! this.getAliasFolder().exists()) {
+			this.getAliasFolder().mkdirs();
+			this.createExample();
+			
+			// only run this check if it exists otherwise we'll throw NPE 
+			if (new File("FactionsAlias/config.yml").exists()) this.migrateConfigurationData();
+			
+		}
+				
 		saveDefaultConfig();
 		
 		config = getConfig();
 		
-		registerSubCommands();
+		this.loadFromDisk();
 	}
 	
+	private void createExample() {
+		this.log("Creating example (powerexample)");
+		Alias example = Alias.get("powerexample");
+		
+		example.setAliases(new ArrayList<String>() {	
+			private static final long serialVersionUID = -5066784642852485982L; 
+			{
+				this.add("pow");
+				this.add("power");
+				this.add("powerexample");
+				this.add("example");
+			}
+		});
+		
+		example.setDescription("An example of rewriting to the p sub command");
+		example.setExecute("f p");
+		example.setPermission("factions.power");
+		example.setDescription("This is an example");
+		example.setPermissionDeniedMessage(ChatColor.RED + "You dont have permission to do this!");
+		example.setRequirement("FactionsEnabledInWorld", true);
+		example.setRequirement("ExecuterIsPlayer", false);
+		example.setRequirement("ExecuterIsInFaction", false);
+		example.setRequirement("ExecuterIsLeader", false);
+		
+		example.save();
+	}
+
+
 	@Override
 	public void onDisable() {
 		// Unregister our sub commands
 		unregisterSubCommands();
-		
-		// Remove the support base 
-		supportBase = null;
 	}
 	
 	public void reloadSubCommands() {
@@ -90,25 +104,25 @@ public class FactionsAlias extends JavaPlugin {
 		config = getConfig();
 		
 		unregisterSubCommands();
-		registerSubCommands();
 	}
 	
-	public void unregisterSubCommands() {		
-		supportBase.unregister();
-		
+	public void unregisterSubCommands() {				
 		aliasList.clear();
-		aliasMap.clear();
 	}
 	
-	public void registerSubCommands() {
+	public void migrateConfigurationData() {
 		
 		int i = 0;
+		
+		config = getConfig();
+		
+		if (config.getConfigurationSection("aliases") == null) return;
 		
 		for(String aliasSection : config.getConfigurationSection("aliases").getKeys(false)) {
 			i++;
 			
-			// ensure any new features are added
-			ensureSectionIsUpToDate(aliasSection);
+			// Ensure any previous features are added from the older revisions 
+			if( ! config.contains("aliases."+aliasSection+".requires.executerIsLeader")) config.set("aliases."+aliasSection+".requires.executerIsLeader", false);
 			
 			try {
 				config.save(new File("FactionsAlias/config.yml"));
@@ -116,45 +130,93 @@ public class FactionsAlias extends JavaPlugin {
 				e.printStackTrace();
 			}
 			
-			List<String> a = new ArrayList<String>();
+			List<String> aliases = new ArrayList<String>();
 			
-			for(Object badfb : config.getList("aliases."+aliasSection+".aliases").toArray()) {
-				a.add(badfb.toString());
-				aliasList.add(badfb.toString());
-				aliasMap.put(badfb.toString(), config.getString("aliases."+aliasSection+".execute"));
+			for(Object alias : config.getList("aliases."+aliasSection+".aliases").toArray()) {
+				aliases.add(alias.toString());
 			}
 			
-			supportBase.add(
-				a,
-				config.getBoolean("aliases."+aliasSection+".requires.factionsEnabledInWorld"),
-				config.getBoolean("aliases."+aliasSection+".requires.executerIsPlayer"),
-				config.getBoolean("aliases."+aliasSection+".requires.executerIsInFaction"),
-				config.getBoolean("aliases."+aliasSection+".requires.executerIsLeader"),
-				config.getString("aliases."+aliasSection+".permission"), 
-				config.getString("aliases."+aliasSection+".permissionDeniedMessage"),
-				config.getString("aliases."+aliasSection+".description"),
-				config.getString("aliases."+aliasSection+".execute")
-			);
+			Alias currentAlias = Alias.get(aliasSection);
+			
+			currentAlias.setAliases(aliases);
+			currentAlias.setPermission(config.getString("aliases." + aliasSection + ".permission"));
+			currentAlias.setDescription(config.getString("aliases." + aliasSection + ".description"));
+			currentAlias.setExecute(config.getString("aliases." + aliasSection + ".execute"));
+			currentAlias.setPermissionDeniedMessage(config.getString("aliases." + aliasSection + ".permissionDeniedMessage"));
+
+			currentAlias.setRequirement("FactionsEnabledInWorld", config.getBoolean("aliases."+aliasSection+".requires.factionsEnabledInWorld"));
+			currentAlias.setRequirement("ExecuterIsPlayer", config.getBoolean("aliases."+aliasSection+".requires.executerIsPlayer"));
+			currentAlias.setRequirement("ExecuterIsInFaction", config.getBoolean("aliases."+aliasSection+".requires.executerIsInFaction"));
+			currentAlias.setRequirement("ExecuterIsLeader", config.getBoolean("aliases."+aliasSection+".requires.executerIsLeader"));
+			
 		}
 		
-		supportBase.finishCall();
+		if (i == 0) {
+			if ( ! config.contains("enabled") || ! config.contains("metrics")) {
+				config.set("enabled", true);
+				config.set("metrics", true);
+			}
+		}
 		
-		log("Loaded "+i+" subcommands!");
 	}
 	
-	public List<String> getAliases() {
+	public List<Alias> getAliases() {
 		return aliasList;
 	}
+		
+	private File aliasFolder = new File(this.getDataFolder(), "aliases");
+	public File getAliasFolder() { return this.aliasFolder; }
 	
-	public String getExecFor(String alias) {
-		return this.aliasMap.get(alias);
+	public void log(String msg) {
+		this.getServer().getConsoleSender().sendMessage(ChatColor.AQUA + "[FactionsAlias]" + ChatColor.RESET + " " + ChatColor.WHITE + msg);
 	}
 	
-	public void ensureSectionIsUpToDate(String section) {
-		if(!config.contains("aliases."+section+".requires.executerIsLeader")) config.set("aliases."+section+".requires.executerIsLeader", false);
+	private List<FactionsCommandSkeleton> commands = new ArrayList<FactionsCommandSkeleton>();
+	
+	public final void add(Alias alias) {
+	
+		log(alias.getKey() + ": " + alias.getDescription());
+		
+		FactionsCommandSkeleton command = new FactionsCommandSkeleton(
+				alias.getAliases(),
+				alias.getRequirement("FactionsEnabledInWorld"),
+				alias.getRequirement("ExecuterIsPlayer"),
+				alias.getRequirement("ExecuterIsInFaction"),
+				alias.getRequirement("ExecuterIsLeader"),
+				alias.getPermission(),
+				alias.getPermissionDeniedMessage(),
+				alias.getDescription(),
+				alias.getExecute()
+			);
+			
+			commands.add(command);
+			
+			FactionsCommandManager.get().addCommand(command);
+
+	}
+
+	public void unregister() {
+		for (int i=0; i < commands.size(); i++) {
+			FactionsCommandManager.get().removeCommand(commands.get(i));
+		}
 	}
 	
-	public void log(String str) {
-		getLogger().log(Level.INFO, str);
+	public void loadFromDisk() {
+		this.unregister();
+		
+		try {
+			Files.walk(Paths.get(FactionsAlias.get().getAliasFolder().getCanonicalPath())).forEach(filePath -> {
+				if (Files.isRegularFile(filePath)) {
+					if (filePath.getFileName().toString().contains(".json")) {
+						String name = filePath.getFileName().toString().split(".json")[0];
+						
+						this.add(Alias.get(name));
+					}
+					System.out.println(filePath);
+				}
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
